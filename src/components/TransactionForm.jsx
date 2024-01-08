@@ -1,16 +1,40 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTransaction } from "../features/transactions/TransactionsSlice";
+
 export default function TransactionForm() {
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [amount, setAmount] = useState(0);
+  const dispatch = useDispatch();
+
+  const handleTransaction = () => {
+    dispatch(addTransaction({ name, type, amount: parseInt(amount) }));
+  };
+
   return (
     <div className="form">
       <h3>Add new transaction</h3>
       <div className="form-group">
         <label htmlFor="transaction_name">Name</label>
-        <input type="text" name="transaction_name" placeholder="My Salary" />
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          type="text"
+          name="transaction_name"
+          placeholder="My Salary"
+        />
       </div>
 
       <div className="form-group radio">
         <label htmlFor="transaction_type">Type</label>
         <div className="radio_group">
-          <input type="radio" value="income" name="transaction_type" checked />
+          <input
+            type="radio"
+            value="income"
+            name="transaction_type"
+            onChange={() => setType("income")}
+          />
           <label htmlFor="transaction_type">Income</label>
         </div>
         <div className="radio_group">
@@ -19,6 +43,7 @@ export default function TransactionForm() {
             value="expense"
             name="transaction_type"
             placeholder="Expense"
+            onChange={() => setType("expense")}
           />
           <label htmlFor="transaction_type">Expense</label>
         </div>
@@ -26,12 +51,19 @@ export default function TransactionForm() {
 
       <div className="form-group">
         <label htmlFor="transaction_amount">Amount</label>
-        <input type="number" placeholder="300" name="transaction_amount" />
+        <input
+          onChange={(e) => setAmount(e.target.value)}
+          type="number"
+          placeholder="300"
+          name="transaction_amount"
+        />
       </div>
 
-      <button className="btn">Add Transaction</button>
+      <button onClick={handleTransaction} className="btn">
+        Add Transaction
+      </button>
 
-      <button className="btn cancel_edit">Cancel Edit</button>
+      {/* <button className="btn cancel_edit">Cancel Edit</button> */}
     </div>
   );
 }

@@ -6,11 +6,24 @@ import { loadTransactions } from "./features/transactions/TransactionsSlice";
 
 export default function App() {
   const dispatch = useDispatch();
-  const { transactions } = useSelector((state) => state.transactions);
-  console.log(transactions);
+  const { transactions, isLoading, isError, error } = useSelector(
+    (state) => state.transactions
+  );
+
   useEffect(() => {
     dispatch(loadTransactions());
   }, [dispatch]);
+
+  let content = null;
+  if (isLoading) {
+    content = <li>Loading...</li>;
+  } else if (!isLoading && isError) {
+    content = <li>{error}</li>;
+  } else {
+    content = transactions.map((transaction, key) => (
+      <Transaction key={key} transaction={transaction} />
+    ));
+  }
 
   return (
     <div className="App">
@@ -33,9 +46,7 @@ export default function App() {
           {/* transactions */}
           <p className="second_heading">Your Transactions:</p>
           <div className="conatiner_of_list_of_transactions">
-            <ul>
-              <Transaction />
-            </ul>
+            <ul>{content}</ul>
           </div>
         </div>
       </div>
