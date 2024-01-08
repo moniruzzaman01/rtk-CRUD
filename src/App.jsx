@@ -19,6 +19,8 @@ export default function App() {
     content = <li>Loading...</li>;
   } else if (!isLoading && isError) {
     content = <li>{error}</li>;
+  } else if (transactions.length == 0) {
+    content = <li>No transactions found!!!</li>;
   } else {
     content = transactions.map((transaction, key) => (
       <Transaction key={key} transaction={transaction} />

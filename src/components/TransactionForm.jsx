@@ -32,6 +32,7 @@ export default function TransactionForm() {
     setAmount("");
   };
   const handleAddTransaction = () => {
+    if (!name || !type || !amount) return;
     dispatch(addTransaction({ name, type, amount: parseInt(amount) }));
     resetForm();
   };
