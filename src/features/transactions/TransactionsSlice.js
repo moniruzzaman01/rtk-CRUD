@@ -11,6 +11,7 @@ const initialState = {
   isLoading: false,
   isError: false,
   error: "",
+  editing: {},
 };
 
 export const loadTransactions = createAsyncThunk(
@@ -45,6 +46,14 @@ export const editTransaction = createAsyncThunk(
 const TransactionsSlice = createSlice({
   name: "transactions",
   initialState,
+  reducers: {
+    activeEditing: (state, action) => {
+      state.editing = action.payload;
+    },
+    InactiveEditing: (state) => {
+      state.editing = {};
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadTransactions.pending, (state) => {
@@ -72,8 +81,41 @@ const TransactionsSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.error = action.error.message;
+      })
+      .addCase(removeTransaction.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(removeTransaction.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactions = state.transactions.filter(
+          (t) => t.id != action.meta.arg
+        );
+        state.isError = false;
+      })
+      .addCase(removeTransaction.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error.message;
+      })
+      .addCase(editTransaction.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editTransaction.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactions = state.transactions.map((t) => {
+          if (t.id == action.payload.id) {
+            t = action.payload;
+          }
+          return t;
+        });
+      })
+      .addCase(editTransaction.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error.message;
       });
   },
 });
 
 export default TransactionsSlice.reducer;
+export const { activeEditing, InactiveEditing } = TransactionsSlice.actions;

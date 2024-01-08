@@ -13,6 +13,6 @@ export const deleteTransaction = async (id) => {
   return response.data;
 };
 export const updateTransaction = async (id, data) => {
-  const response = await axiosInstance.get(`/transactions/${id}`, data);
+  const response = await axiosInstance.patch(`/transactions/${id}`, data);
   return response.data;
 };

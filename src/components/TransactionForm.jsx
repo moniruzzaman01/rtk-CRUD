@@ -1,15 +1,52 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addTransaction } from "../features/transactions/TransactionsSlice";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  activeEditing,
+  addTransaction,
+  editTransaction,
+} from "../features/transactions/TransactionsSlice";
 
 export default function TransactionForm() {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
+  const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
+  const { editing } = useSelector((state) => state.transactions);
 
-  const handleTransaction = () => {
+  useEffect(() => {
+    if (editing.id) {
+      setName(editing.name);
+      setType(editing.type);
+      setAmount(editing.amount);
+      setEditMode(true);
+    } else {
+      resetForm();
+      setEditMode(false);
+    }
+  }, [editing]);
+
+  const resetForm = () => {
+    setName("");
+    setType("");
+    setAmount("");
+  };
+  const handleAddTransaction = () => {
     dispatch(addTransaction({ name, type, amount: parseInt(amount) }));
+    resetForm();
+  };
+  const handleEditTransaction = () => {
+    dispatch(
+      editTransaction({
+        id: editing.id,
+        data: { name, type, amount: parseInt(amount) },
+      })
+    );
+    resetForm();
+    setEditMode(false);
+  };
+  const handleCancelEdit = () => {
+    dispatch(activeEditing({}));
   };
 
   return (
@@ -33,9 +70,12 @@ export default function TransactionForm() {
             type="radio"
             value="income"
             name="transaction_type"
+            checked={type == "income" && true}
             onChange={() => setType("income")}
           />
-          <label htmlFor="transaction_type">Income</label>
+          <label onClick={() => setType("income")} htmlFor="transaction_type">
+            Income
+          </label>
         </div>
         <div className="radio_group">
           <input
@@ -43,9 +83,12 @@ export default function TransactionForm() {
             value="expense"
             name="transaction_type"
             placeholder="Expense"
+            checked={type == "expense" && true}
             onChange={() => setType("expense")}
           />
-          <label htmlFor="transaction_type">Expense</label>
+          <label onClick={() => setType("expense")} htmlFor="transaction_type">
+            Expense
+          </label>
         </div>
       </div>
 
@@ -56,14 +99,22 @@ export default function TransactionForm() {
           type="number"
           placeholder="300"
           name="transaction_amount"
+          value={amount}
         />
       </div>
 
-      <button onClick={handleTransaction} className="btn">
-        Add Transaction
+      <button
+        onClick={editMode ? handleEditTransaction : handleAddTransaction}
+        className="btn"
+      >
+        {editMode ? "Update Transaction" : "Add Transaction"}
       </button>
 
-      {/* <button className="btn cancel_edit">Cancel Edit</button> */}
+      {editMode && (
+        <button onClick={handleCancelEdit} className="btn cancel_edit">
+          Cancel Edit
+        </button>
+      )}
     </div>
   );
 }
