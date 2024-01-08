@@ -40,7 +40,14 @@ export default function App() {
             <p>Your Current Balance</p>
             <h3>
               <span>৳</span>
-              <span>10500</span>
+              <span>
+                {transactions.reduce(
+                  (prev, curr) =>
+                    prev +
+                    (curr.type == "income" ? curr.amount : -1 * curr.amount),
+                  0
+                )}
+              </span>
             </h3>
           </div>
           {/* transaction form */}
