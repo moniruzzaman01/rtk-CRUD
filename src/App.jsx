@@ -1,7 +1,17 @@
+import { useEffect } from "react";
 import Transaction from "./components/Transaction";
 import TransactionForm from "./components/TransactionForm";
+import { useDispatch, useSelector } from "react-redux";
+import { loadTransactions } from "./features/transactions/TransactionsSlice";
 
 export default function App() {
+  const dispatch = useDispatch();
+  const { transactions } = useSelector((state) => state.transactions);
+  console.log(transactions);
+  useEffect(() => {
+    dispatch(loadTransactions());
+  }, [dispatch]);
+
   return (
     <div className="App">
       {/* navbar */}
